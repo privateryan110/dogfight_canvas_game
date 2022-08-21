@@ -1,0 +1,15 @@
+@charset "UTF-8";
+
+body {
+	background-color: black;
+}
+
+canvas {
+	background: #f8f8f8;
+	background: #f8f8f8;
+  	padding: 0;
+  	margin: 0 auto;
+  	margin-bottom: 1rem;
+  	display: block;
+}
+
