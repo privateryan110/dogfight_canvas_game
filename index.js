@@ -33,38 +33,66 @@ function clear(){
 redX = 50;
 redY = 50;
 redD = 180;
-blueX = width-100;
-blueY = height-100;
+blueX = 1100;
+blueY = 800;
 blueD = 0;
 
 //creates an empty list to add bullet objects to 
-bulletList = [];
+var bulletList = [[],[]];
 
 
-
+playerSpeed = 50; //<-------Player Movement Speed
+bulletSpeed = 5;//<--------Bullet Speed
 
 document.addEventListener('keydown', (e) => {
         e = e || window.event;
+        
+        //RED CONTROLS 
         if (e.keyCode === 87){
-            redY-=50;
+            redY-=playerSpeed;
             redD = 0;
         }
         else if (e.keyCode === 68){
-            redX+=50;
+            redX+=playerSpeed;
             redD = 90;
         }
     
         else if (e.keyCode === 83){
-            redY+=50;
+            redY+=playerSpeed;
             redD = 180;
         }
         else if (e.keyCode === 65){
-            redX-=50;
+            redX-=playerSpeed;
             redD = 270;
         }
         else if (e.keyCode === 32){
-            //creates a bullet at red's location and direction
+            //adds a bullet direction, x and y to a list
+            bulletList.push([redD, redX, redY]);
         }
+    
+        //BLUE CONTROLS
+        else if (e.keyCode === 38){
+            blueY-=playerSpeed;
+            blueD = 0;
+        }
+        else if (e.keyCode === 39){
+            blueX+=playerSpeed;
+            blueD = 90;
+        }
+        else if (e.keyCode === 40){
+            blueY+=playerSpeed;
+            blueD = 180;
+        }
+        else if (e.keyCode === 37){
+            blueX-=playerSpeed;
+            blueD = 270;
+        }
+        else if (e.keyCode === 188){
+            //adds a bullet direction, x and y to a list
+            bulletList.push([blueD, blueX, blueY]);
+        }
+    
+        
     })
 
 
@@ -73,7 +101,7 @@ setInterval(function gameLoop(){
 	clear();
     //where the updates should start 
     
-    //keeps red in line
+    //keeps red in line (inside the canvas)
     if (redX >= width-50){
     redX = width-50;
     }
@@ -86,12 +114,33 @@ setInterval(function gameLoop(){
     if(redY <= 0){
         redY = 0;
     }
+
     
     //iterates through bullet list and traces each one of them
-	redTeam.drawSprite(redD, redX, redY, "#FF000");
-	blueTeam.drawSprite(blueD, width-100, height-100, "#072F5F");
+    //draws a bullet for every item in the bullet list
+    for (let i = 0; i < bulletList.length; i++){
+        drawBullet(bulletList[i][0], bulletList[i][1], bulletList[i][2]);
+        //modifies the x and y based on the direction
+        if (bulletList[i][0] == 90){
+            bulletList[i][1] += bulletSpeed; //moves bullet left
+        }
+        else if (bulletList[i][0] == 180){
+            bulletList[i][2] += bulletSpeed; //moves bullet down 
+        }
+        else if (bulletList[i][0] == 270){
+            bulletList[i][1] -= bulletSpeed; //moves bullet left
+        }
+        else if (bulletList[i][0] == 0){
+            bulletList[i][2] -= bulletSpeed; //moves bullet up 
+        }
+        //check if bullet is close enough to player every frame 
+    }
     
-}, 1)
+    //based on direction and it's x and y + 100
+	redTeam.drawSprite(redD, redX, redY);
+	blueTeam.drawSprite(blueD, blueX, blueY);
+    
+}, 1) // <--------CONTROLS FRAME RATE
 
 function Team(name, color, startx, starty, direction){	
 	this.name = name;
@@ -107,6 +156,7 @@ function Team(name, color, startx, starty, direction){
 		
 		//draws the direction of the turret
             //0 degrees is considered straight up
+        
 		if (d == 90){
 			ctx.fillRect(x + 50,y + 20, 10,10)
 		}
@@ -122,7 +172,20 @@ function Team(name, color, startx, starty, direction){
 	}
 }
 
-//create bullet object that takes location and direction info
+function drawBullet(d, x, y){
+    if (d == 90){
+		ctx.fillRect(x + 60,y + 20, 10,10)
+	}
+	else if (d == 180){
+		ctx.fillRect(x + 20, y + 60, 10,10)
+	}
+	else if (d == 270){
+		ctx.fillRect(x - 20, y + 20, 10,10)
+	}
+	else if (d == 0){
+		ctx.fillRect(x + 20, y - 20, 10,10)
+	}	
+}
 
 
 //wait for html to load
