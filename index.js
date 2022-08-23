@@ -16,7 +16,7 @@ function init(){
 
 //creates red team in its starting position
 var redTeam = new Team("red", "#FF0000", 0, 0, 90);
-var blueTeam = new Team("blue", "#072F5F", 0, 0, 270);
+var blueTeam = new Team("blue", "#1261A0", 0, 0, 270);
 
 //update function
 function update(){
@@ -171,16 +171,22 @@ setInterval(function gameLoop(){
             bulletList[i][2] -= bulletSpeed; //moves bullet up 
         }
         
-        
-        //causes self to die on firing up and left????
+        const titleElement = document.getElementById("titleText");
+        //HITBOXES
         if ((bulletList[i][1] > redX) && (bulletList[i][1] < redX + 50)){
-            if ((bulletList[i][2] > redY) && (bulletList[i][2] <= redY + 50))
+            if ((bulletList[i][2] > redY) && (bulletList[i][2] <= redY + 50)){
                 game = false; 
+                titleElement.style.color = blueTeam.color;
+                document.body.style.background = blueTeam.color;
+            }
         }
         
         if ((bulletList[i][1] > blueX) && (bulletList[i][1] < blueX + 50)){
-            if ((bulletList[i][2] > blueY) && (bulletList[i][2] <= blueY + 50))
+            if ((bulletList[i][2] > blueY) && (bulletList[i][2] <= blueY + 50)){
                 game = false; 
+                titleElement.style.color = redTeam.color;
+                document.body.style.background = redTeam.color;
+            }
         }
     }
     
@@ -230,6 +236,7 @@ function Team(name, color, startx, starty, direction){
 }
 
 function drawBullet(d, x, y){
+    ctx.fillStyle = "#00000"
     ctx.fillRect(x, y, 10,10)
 }
 
