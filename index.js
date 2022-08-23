@@ -42,7 +42,7 @@ var bulletList = [[],[]];
 
 
 playerSpeed = 50; //<-------Player Movement Speed
-bulletSpeed = 5;//<--------Bullet Speed
+bulletSpeed = 10;//<--------Bullet Speed
 
 document.addEventListener('keydown', (e) => {
         e = e || window.event;
@@ -67,7 +67,18 @@ document.addEventListener('keydown', (e) => {
         }
         else if (e.keyCode === 32){
             //adds a bullet direction, x and y to a list
-            bulletList.push([redD, redX, redY]);
+            if (redD == 90){
+                bulletList.push([redD, redX+50, redY+ 20]);
+            }
+            else if (redD == 180){
+                bulletList.push([redD, redX + 20, redY + 50]);
+            }
+            else if (redD == 270){
+                bulletList.push([redD, redX - 20, redY + 20]);
+            }
+            else if (blueD == 0){
+                bulletList.push([redD, redX + 20, redY -20]);
+            }
         }
     
         //BLUE CONTROLS
@@ -89,7 +100,18 @@ document.addEventListener('keydown', (e) => {
         }
         else if (e.keyCode === 188){
             //adds a bullet direction, x and y to a list
-            bulletList.push([blueD, blueX, blueY]);
+            if (blueD == 90){
+                bulletList.push([blueD, blueX+50, blueY+ 20]);
+            }
+            else if (blueD== 180){
+                bulletList.push([blueD, blueX + 20, blueY + 50]);
+            }
+            else if (blueD == 270){
+                bulletList.push([blueD, blueX - 20, blueY + 20]);
+            }
+            else if (blueD == 0){
+                bulletList.push([blueD, blueX + 20, blueY -20]);
+            }
         }
     
         
@@ -97,13 +119,14 @@ document.addEventListener('keydown', (e) => {
 
 
 setInterval(function gameLoop(){
+    game = true;
 	update();
 	clear();
     //where the updates should start 
     
     //keeps red in line (inside the canvas)
     if (redX >= width-50){
-    redX = width-50;
+        redX = width-50;
     }
     if (redY >= height){
         redY = height-50;
@@ -113,6 +136,20 @@ setInterval(function gameLoop(){
     }
     if(redY <= 0){
         redY = 0;
+    }
+    
+    //keep blue in line (inside the canvas)
+    if (blueX >= 1150){
+        blueX = 1150;
+    }
+    if (blueY >= 900){
+        blueY = 850;
+    }
+    if (blueX <= 0){
+       blueX = 0;
+    }
+    if(blueY <= 0){
+        blueY = 0;
     }
 
     
@@ -133,7 +170,27 @@ setInterval(function gameLoop(){
         else if (bulletList[i][0] == 0){
             bulletList[i][2] -= bulletSpeed; //moves bullet up 
         }
-        //check if bullet is close enough to player every frame 
+        
+        
+        //causes self to die on firing up and left????
+        if ((bulletList[i][1] > redX) && (bulletList[i][1] < redX + 50)){
+            if ((bulletList[i][2] > redY) && (bulletList[i][2] <= redY + 50))
+                game = false; 
+        }
+        
+        if ((bulletList[i][1] > blueX) && (bulletList[i][1] < blueX + 50)){
+            if ((bulletList[i][2] > blueY) && (bulletList[i][2] <= blueY + 50))
+                game = false; 
+        }
+    }
+    
+    if (game == false){
+        redX = 50;
+        redY = 50;
+        redD = 180;
+        blueX = 1100;
+        blueY = 800;
+        blueD = 0;
     }
     
     //based on direction and it's x and y + 100
@@ -173,18 +230,7 @@ function Team(name, color, startx, starty, direction){
 }
 
 function drawBullet(d, x, y){
-    if (d == 90){
-		ctx.fillRect(x + 60,y + 20, 10,10)
-	}
-	else if (d == 180){
-		ctx.fillRect(x + 20, y + 60, 10,10)
-	}
-	else if (d == 270){
-		ctx.fillRect(x - 20, y + 20, 10,10)
-	}
-	else if (d == 0){
-		ctx.fillRect(x + 20, y - 20, 10,10)
-	}	
+    ctx.fillRect(x, y, 10,10)
 }
 
 
