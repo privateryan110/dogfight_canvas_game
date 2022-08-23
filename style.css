@@ -1,7 +1,12 @@
 @charset "UTF-8";
 
 body {
-	background-color: gray;
+	background-color: black;
+}
+
+h1 {
+	color: white;
+	text-align:center;
 }
 
 canvas {
@@ -12,4 +17,12 @@ canvas {
   	margin-bottom: 1rem;
   	display: block;
 }
+
+titleDiv {
+	display: flex;
+	text-align: center;
+}
+
+
+
 
