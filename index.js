@@ -2,7 +2,7 @@
 //for canvas test website
 	
 //initialize config vars
-let canvas, ctx, width, height
+let canvas, ctx, width, height, redX, redY, blueX, blueY
 
 
 function init(){
@@ -15,8 +15,8 @@ function init(){
 
 
 //creates red team in its starting position
-var redTeam = new Team("red", "#FF0000", 50, 50, 90);
-var blueTeam = new Team("blue", "#072F5F", width-50, height-50, 270);
+var redTeam = new Team("red", "#FF0000", 0, 0, 90);
+var blueTeam = new Team("blue", "#072F5F", 0, 0, 270);
 
 //update function
 function update(){
@@ -28,19 +28,70 @@ function clear(){
 	ctx.clearRect(0,0, width, height);
 }
 
+
+//starting conditions for both tanks
 redX = 50;
-var redY = 50;
-var blueX = height-100;
-var blueY = height-100;
+redY = 50;
+redD = 180;
+blueX = width-100;
+blueY = height-100;
+blueD = 0;
+
+//creates an empty list to add bullet objects to 
+bulletList = [];
+
+
+
+
+document.addEventListener('keydown', (e) => {
+        e = e || window.event;
+        if (e.keyCode === 87){
+            redY-=50;
+            redD = 0;
+        }
+        else if (e.keyCode === 68){
+            redX+=50;
+            redD = 90;
+        }
+    
+        else if (e.keyCode === 83){
+            redY+=50;
+            redD = 180;
+        }
+        else if (e.keyCode === 65){
+            redX-=50;
+            redD = 270;
+        }
+        else if (e.keyCode === 32){
+            //creates a bullet at red's location and direction
+        }
+    })
+
 
 setInterval(function gameLoop(){
 	update();
 	clear();
+    //where the updates should start 
     
-	redTeam.drawSprite(180, 50, 50, "#FF000");
-	blueTeam.drawSprite(0, width-100, height-100, "#072F5F");
-    document.onkeydown = checkKey;
-}, 1)	
+    //keeps red in line
+    if (redX >= width-50){
+    redX = width-50;
+    }
+    if (redY >= height){
+        redY = height-50;
+    }
+    if (redX <= 0){
+       redX = 0;
+    }
+    if(redY <= 0){
+        redY = 0;
+    }
+    
+    //iterates through bullet list and traces each one of them
+	redTeam.drawSprite(redD, redX, redY, "#FF000");
+	blueTeam.drawSprite(blueD, width-100, height-100, "#072F5F");
+    
+}, 1)
 
 function Team(name, color, startx, starty, direction){	
 	this.name = name;
@@ -48,7 +99,7 @@ function Team(name, color, startx, starty, direction){
 	this.x = startx;
 	this.y = starty;
 	this.d = direction;
-	
+    
 	//draws the sprite according to the coordinates
 	this.drawSprite = function(d, x, y) {
 		ctx.fillStyle = this.color; //defines fill style for player 1
@@ -60,7 +111,7 @@ function Team(name, color, startx, starty, direction){
 			ctx.fillRect(x + 50,y + 20, 10,10)
 		}
 		else if (d == 180){
-			ctx.fillRect(y + 20, y + 50, 10,10)
+			ctx.fillRect(x + 20, y + 50, 10,10)
 		}
 		else if (d == 270){
 			ctx.fillRect(x - 10, y + 20, 10,10)
@@ -71,14 +122,8 @@ function Team(name, color, startx, starty, direction){
 	}
 }
 
-//game loop
-function tankGame(){
-	//draws both sprites (red at top left and blue at top right)
-	//controls 
-		//RED: WASD to move, space to shoot
-		//BLUE: arrows to move, right command to shoot
-	
-}
+//create bullet object that takes location and direction info
+
 
 //wait for html to load
 document.addEventListener('DOMContentLoaded', init);
