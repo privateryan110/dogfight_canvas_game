@@ -1,9 +1,4 @@
-//index.js
-//for canvas test website
-
-//version that allows the holding of buttons //ALSO A GIT TEST
-	
-//initialize config vars
+//test js for the shape rotation
 let canvas, ctx, width, height, redX, redY, blueX, blueY
 
 
@@ -12,13 +7,173 @@ function init(){
 	ctx = canvas.getContext('2d')
 	width = canvas.width;
 	height = canvas.height;
-	requestionAnimationFrame(gameLoop);	
+    requestionAnimationFrame(gameLoop);	
 }
 
+setInterval(function gameLoop(){
+    game = true;
+	update();
+	clear();
+    
+    //Red player controls
+    //W (forwards)
+    if (keys[87] == true){
+        redX += (playerSpeed * Math.cos(convertAngle(redD-90)));
+        redY += (playerSpeed * Math.sin(convertAngle(redD-90)));
+    }
+    //S (backwards)
+    if (keys[83] == true){
+        redX -= (playerSpeed * Math.cos(convertAngle(redD-90)));
+        redY -= (playerSpeed * Math.sin(convertAngle(redD-90)));
+    }
+    
+    //D turns right (modifies direction math has yet to come)   
+    if (keys[68] == true){
+        //redX += playerSpeed;
+        redD = redD + 1;
+    }
+    
+    //A turns left (modifies direction, math has yet to come)
+    if (keys[65] ==true){
+        redD = redD - 1;
+    }
+    
+    //Blue Player Controls
+    //up arrow (forwards)
+    if (keys[38] == true){
+        blueX += (playerSpeed * Math.cos(convertAngle(blueD-90)));
+        blueY += (playerSpeed * Math.sin(convertAngle(blueD-90)));
+    }
+    //Down Arrow (backwards)
+    if (keys[40] == true){
+        blueX -= (playerSpeed * Math.cos(convertAngle(blueD-90)));
+        blueY -= (playerSpeed * Math.sin(convertAngle(blueD-90)));
+    }
+    //Right Arrow (turns right)
+    if (keys[39] == true){
+        blueD = blueD + 1;
+    }
+    //Left Arrow (turns left)
+    if (keys[37] == true){  
+        blueD = blueD - 1;
+    }
+    
+    //keeps red in line (inside the canvas)
+    if (redX >= 1175){
+        redX = 1175;
+    }
+    if (redY >= 775){
+        redY = 775;
+    }
+    if (redX <= 25){
+       redX = 25;
+    }
+    if(redY <= 25){
+        redY = 25;
+    }
+    
+    //keep blue in line (inside the canvas)
+    if (blueX >= 1175){
+        blueX = 1175;
+    }
+    if (blueY >= 775){
+        blueY = 775;
+    }
+    if (blueX <= 25){
+       blueX = 25;
+    }
+    if(blueY <= 25){
+        blueY = 25;
+    }
+    
+    //iterates through bullet list and traces each one of them
+    //draws a bullet for every item in the bullet list
+    for (let i = 0; i < bulletList.length; i++){
+        //if a bullet touches the walls
+        //modifies the x and y based on the direction
+        bulletList[i][1] += (bulletSpeed * Math.cos(convertAngle(bulletList[i][0] - 90)));
+        bulletList[i][2] += (bulletSpeed * Math.sin(convertAngle(bulletList[i][0] - 90)));
+        
+        /* BOUNCING OFF WALLS TRY TO FIX LATER
+        if (bulletList[i][1] <= 0){
+            bulletList[i][3]++;
+            if (bulletList[i][3] < 2){
+                bulletList[i][0] = -bulletList[i][0];
+            }
+        }
+        if (bulletList[i][1] >= 1200){
+            bulletList[i][3]++;
+            if (bulletList[i][3] < 2){
+                bulletList[i][0] = -bulletList[i][0];
+            }
+        }
+        if (bulletList[i][2] <= 0){
+            bulletList[i][3]++;
+            if (bulletList[i][3] < 2){
+                bulletList[i][0] = -bulletList[i][0];
+            }
+        }
+        if (bulletList[i][2] >= 800){
+            bulletList[i][3]++;
+            if (bulletList[i][3] < 2){
+                bulletList[i][0] = -bulletList[i][0];
+            }
+        }
+        */
+        
+        drawBullet(bulletList[i][0], bulletList[i][1], bulletList[i][2]);
+        
+        const titleElement = document.getElementById("titleText");
+        //HITBOXES
+        //draw circle around each player 
+        dR = Math.sqrt(((bulletList[i][1] - redX)**2) + (bulletList[i][2] - redY) ** 2);
+        dB = Math.sqrt(((bulletList[i][1] - blueX)**2) + (bulletList[i][2] - blueY) ** 2);
+        if (bulletList[i][4] > 20){
+            if (dR < 35){
+                game = false; 
+                titleElement.style.color = blueTeam.color;
+                document.body.style.background = blueTeam.color;
+            }
+
+            if (dB < 35){
+                game = false; 
+                titleElement.style.color = redTeam.color;
+                document.body.style.background = redTeam.color;
+            }
+        }
+        bulletList[i][4]++;
+    }
+    
+    //when the round ends resets the starting position 
+    if (game == false){
+        redX = 50;
+        redY = 50;
+        redD = 180;
+        blueX = 1100;
+        blueY = 700;
+        blueD = 0;
+    }
+
+    redTeam.drawPlayer(redX,redY, 50, redD);
+    blueTeam.drawPlayer(blueX, blueY, 50, blueD);
+}, 1)
 
 //creates red team in its starting position
 var redTeam = new Team("red", "#FF0000", 0, 0, 90);
 var blueTeam = new Team("blue", "#1261A0", 0, 0, 270);
+
+
+//starting conditions for both tanks
+redX = 100;
+redY = 100;
+redD = 180;
+blueX = 1100;
+blueY = 700;
+blueD = 0; 
+
+playerSpeed = 3; //<-------Player Movement Speed (in pixels per frame) 
+//rotationSpead = 3; //<---- Speed at which players turn
+bulletSpeed = 5;//<--------Bullet Speed
 
 //update function
 function update(){
@@ -30,63 +185,76 @@ function clear(){
 	ctx.clearRect(0,0, width, height);
 }
 
-
-//starting conditions for both tanks
-redX = 50;
-redY = 50;
-redD = 180;
-blueX = 1100;
-blueY = 700;
-blueD = 0;
-
-//creates an empty list to add bullet objects to 
-var bulletList = [[],[]];
-
-
-playerSpeed = 3; //<-------Player Movement Speed (in pixels per frame) 
-bulletSpeed = 10;//<--------Bullet Speed
-
-
-//SHOOTING
-document.addEventListener('keydown', (e) => {
-        e = e || window.event;
-        
-        //RED SHOOT
-        if (e.keyCode === 32){
-            //adds a bullet direction, x and y to a list
-            if (redD == 90){
-                bulletList.push([redD, redX + 50, redY + 20]);
-            }
-            else if (redD == 180){
-                bulletList.push([redD, redX + 20, redY + 50]);
-            }
-            else if (redD == 270){
-                bulletList.push([redD, redX - 20, redY + 20]);
-            }
-            else if (redD == 0){
-                bulletList.push([redD, redX + 20, redY -20]);
-            }
-        }
+function Team(name, color, startx, starty, direction){	
+	this.name = name;
+	this.color = color;
+	this.x = startx;
+	this.y = starty;
+	this.d = direction;
     
-        //BLUE SHOOT
-        else if (e.keyCode === 188){
-            //adds a bullet direction, x and y to a list
-            if (blueD == 90){
-                bulletList.push([blueD, blueX+50, blueY+ 20]);
-            }
-            else if (blueD== 180){
-                bulletList.push([blueD, blueX + 20, blueY + 50]);
-            }
-            else if (blueD == 270){
-                bulletList.push([blueD, blueX - 20, blueY + 20]);
-            }
-            else if (blueD == 0){
-                bulletList.push([blueD, blueX + 20, blueY -20]);
-            }
-        }
+    this.drawPlayer = function(centerX, centerY, size, angle){
+        drawSquare(centerX, centerY, size, angle, this.color); 
+        angleR = convertAngle(angle);
+        turretCenterX = centerX + (((size / 2) +(size / 10)) * Math.sin(angleR));
+        turretCenterY = centerY - (((size / 2) +(size / 10)) * Math.cos(angleR));
+        drawSquare(turretCenterX, turretCenterY, (size/5), angle, this.color);
+    }
+}
+
+//draws a square at the given angle
+function drawSquare(centerX, centerY, size, angle, color){
+    ctx.fillRect(centerX-1,centerY-1,2,2);
+    //ctx.strokeStyle = "#000000";
+    //convert angle to radians
+    angleR = convertAngle(angle);
     
-        
-    })
+    //finds the distance from center of the square to the corner
+    centerToCorner = Math.sqrt(((size/2)**2) + ((size/2)**2));
+    //x and y are center of square
+    //angle is angle of rotation
+    
+    //starts at the bottom left corer (if the angle is 0 degrees)
+    //finds the bottom left corner
+    x = centerX + ((centerToCorner * Math.sin(convertAngle(45-angle))));
+    y = centerY + ((centerToCorner * Math.cos(convertAngle(45-angle))));
+    ctx.beginPath();
+    ctx.moveTo(x,y);
+    x = x - (size * Math.cos(angleR));
+    y = y - (size * Math.sin(angleR));
+    ctx.lineTo(x,y);
+    x = x + (size * Math.sin(angleR));
+    y = y - (size * Math.cos(angleR));
+    ctx.lineTo(x,y);
+    x = x + (size * Math.cos(angleR));
+    y = y + (size * Math.sin(angleR));
+    ctx.lineTo(x,y);
+    x = x - (size * Math.sin(angleR));
+    y = y + (size * Math.cos(angleR));
+    ctx.lineTo(x,y);
+    //ctx.stroke();
+    ctx.fillStyle = color;
+    ctx.fill();
+}
+
+//draws the player shape
+function drawPlayer(centerX, centerY, size, angle){
+    drawSquare(centerX, centerY, size, angle); 
+    angleR = convertAngle(angle);
+    turretCenterX = centerX + (((size / 2) +(size / 10)) * Math.sin(angleR));
+    turretCenterY = centerY - (((size / 2) +(size / 10)) * Math.cos(angleR));
+    drawSquare(turretCenterX, turretCenterY, (size/5), angle);
+}
+
+//draws the bullet
+function drawBullet(d, x, y){
+    drawSquare(x, y, 10, d, "#00000")
+}
+
+//converst angle to radians
+function convertAngle(angle){
+    radians = (angle * Math.PI) / 180;
+    return radians;
+}
 
 //array to store key values in
 var keys = [false];
@@ -96,7 +264,7 @@ for (let i = 1; i < 223; i++){
     keys.push(false);
 }
 
-
+//movement listeners
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
 
@@ -110,182 +278,25 @@ function keyUpHandler(e){
     keys[e.keyCode] = false;
 }
 
-setInterval(function gameLoop(){
-    game = true;
-	update();
-	clear();
-    //where the updates should start 
-    
-    //player movement and firing (as decided by keys[] array)
-    
-    //Red Player Controls
-    //W (forwards)
-    if (keys[87] == true){
-        redY -= playerSpeed;
-        redD = 0;
-    }
-    //S (backwards)
-    if (keys[83] == true){
-        redY += playerSpeed;
-        redD = 180;
-    }
-    
-    //D turns right (modifies direction math has yet to come)   
-    if (keys[68] == true){
-        redX += playerSpeed;
-        redD = 90;
-    }
-    
-    //A turns left (modifies direction, math has yet to come)
-    if (keys[65] ==true){
-        redX -= playerSpeed;
-        redD = 270;
-    }
-    
-    //shooting should still be on a press by press basis imo 
-    
-    //Blue Player Controls
-    //up arrow (forwards)
-    if (keys[38] == true){
-        blueY -= playerSpeed;
-        blueD = 0;
-    }
-    //Down Arrow (backwards)
-    if (keys[40] == true){
-        blueY += playerSpeed;
-        blueD = 180;
-    }
-    //Right Arrow (turns right)
-    if (keys[39] == true){
-        blueX += playerSpeed;
-        blueD = 90;
-    }
-    //Left Arrow (turns left)
-    if (keys[37] == true){
-        blueX -= playerSpeed;
-        blueD = 270;
-    }
-    
-    //Right Arrow (turns right)
-    
-    //keeps red in line (inside the canvas)
-    if (redX >= width-50){
-        redX = width-50;
-    }
-    if (redY >= 750){
-        redY = 750;
-    }
-    if (redX <= 0){
-       redX = 0;
-    }
-    if(redY <= 0){
-        redY = 0;
-    }
-    
-    //keep blue in line (inside the canvas)
-    if (blueX >= 1150){
-        blueX = 1150;
-    }
-    if (blueY >= 750){
-        blueY = 750;
-    }
-    if (blueX <= 0){
-       blueX = 0;
-    }
-    if(blueY <= 0){
-        blueY = 0;
-    }
-    
-    
-    //iterates through bullet list and traces each one of them
-    //draws a bullet for every item in the bullet list
-    for (let i = 0; i < bulletList.length; i++){
-        drawBullet(bulletList[i][0], bulletList[i][1], bulletList[i][2]);
-        //modifies the x and y based on the direction
-        if (bulletList[i][0] == 90){
-            bulletList[i][1] += bulletSpeed; //moves bullet left
-        }
-        else if (bulletList[i][0] == 180){
-            bulletList[i][2] += bulletSpeed; //moves bullet down 
-        }
-        else if (bulletList[i][0] == 270){
-            bulletList[i][1] -= bulletSpeed; //moves bullet left
-        }
-        else if (bulletList[i][0] == 0){
-            bulletList[i][2] -= bulletSpeed; //moves bullet up 
-        }
-        
-        const titleElement = document.getElementById("titleText");
-        //HITBOXES
-        if ((bulletList[i][1] > redX) && (bulletList[i][1] < redX + 50)){
-            if ((bulletList[i][2] > redY) && (bulletList[i][2] <= redY + 50)){
-                game = false; 
-                titleElement.style.color = blueTeam.color;
-                document.body.style.background = blueTeam.color;
-            }
-        }
-        
-        if ((bulletList[i][1] > blueX) && (bulletList[i][1] < blueX + 50)){
-            if ((bulletList[i][2] > blueY) && (bulletList[i][2] <= blueY + 50)){
-                game = false; 
-                titleElement.style.color = redTeam.color;
-                document.body.style.background = redTeam.color;
-            }
-        }
-    }
-    
-    //when the round ends resets the starting position 
-    if (game == false){
-        redX = 50;
-        redY = 50;
-        redD = 180;
-        blueX = 1100;
-        blueY = 700;
-        blueD = 0;
-    }
-    
-    //based on direction and it's x and y + 100
-	redTeam.drawSprite(redD, redX, redY);
-	blueTeam.drawSprite(blueD, blueX, blueY);
-    
-}, 1) // <--------CONTROLS FRAME RATE
 
-function Team(name, color, startx, starty, direction){	
-	this.name = name;
-	this.color = color;
-	this.x = startx;
-	this.y = starty;
-	this.d = direction;
-    
-	//draws the sprite according to the coordinates
-	this.drawSprite = function(d, x, y) {
-		ctx.fillStyle = this.color; //defines fill style for player 1
-		ctx.fillRect(x, y, 50, 50) //startx and y define top right corner
-		
-		//draws the direction of the turret
-            //0 degrees is considered straight up
+//creates an empty list to add bullet objects to 
+var bulletList = [[],[]];
+
+//shooting function
+document.addEventListener('keydown', (e) => {
+    e = e || window.event;
         
-		if (d == 90){
-			ctx.fillRect(x + 50,y + 20, 10,10)
-		}
-		else if (d == 180){
-			ctx.fillRect(x + 20, y + 50, 10,10)
-		}
-		else if (d == 270){
-			ctx.fillRect(x - 10, y + 20, 10,10)
-		}
-		else if (d == 0){
-			ctx.fillRect(x + 20, y - 10, 10,10)
-		}	
-	}
-}
-
-function drawBullet(d, x, y){
-    ctx.fillStyle = "#00000"
-    ctx.fillRect(x, y, 10,10)
-}
-
+    //RED SHOOT
+    if (e.keyCode === 32){
+        //adds a bullet direction, x and y to a list, 0 is for the number of ricochet's the bullet has had
+        bulletList.push([redD, redX, redY, 0, 0]);
+    }
+    
+    //BLUE SHOOT
+    else if (e.keyCode === 188){
+        bulletList.push([blueD, blueX, blueY, 0, 0]);
+    }
+})
 
 //wait for html to load
 document.addEventListener('DOMContentLoaded', init);
-
