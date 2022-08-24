@@ -1,5 +1,7 @@
 //index.js
 //for canvas test website
+
+//version that allows the holding of buttons //ALSO A GIT TEST
 	
 //initialize config vars
 let canvas, ctx, width, height, redX, redY, blueX, blueY
@@ -34,7 +36,7 @@ redX = 50;
 redY = 50;
 redD = 180;
 blueX = 1100;
-blueY = 800;
+blueY = 700;
 blueD = 0;
 
 //creates an empty list to add bullet objects to 
@@ -142,8 +144,8 @@ setInterval(function gameLoop(){
     if (blueX >= 1150){
         blueX = 1150;
     }
-    if (blueY >= 900){
-        blueY = 850;
+    if (blueY >= 800){
+        blueY = 750;
     }
     if (blueX <= 0){
        blueX = 0;
@@ -195,7 +197,7 @@ setInterval(function gameLoop(){
         redY = 50;
         redD = 180;
         blueX = 1100;
-        blueY = 800;
+        blueY = 700;
         blueD = 0;
     }
     
