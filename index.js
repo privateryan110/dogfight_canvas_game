@@ -43,34 +43,19 @@ blueD = 0;
 var bulletList = [[],[]];
 
 
-playerSpeed = 50; //<-------Player Movement Speed
+playerSpeed = 3; //<-------Player Movement Speed (in pixels per frame) 
 bulletSpeed = 10;//<--------Bullet Speed
 
+
+//SHOOTING
 document.addEventListener('keydown', (e) => {
         e = e || window.event;
         
-        //RED CONTROLS 
-        if (e.keyCode === 87){
-            redY-=playerSpeed;
-            redD = 0;
-        }
-        else if (e.keyCode === 68){
-            redX+=playerSpeed;
-            redD = 90;
-        }
-    
-        else if (e.keyCode === 83){
-            redY+=playerSpeed;
-            redD = 180;
-        }
-        else if (e.keyCode === 65){
-            redX-=playerSpeed;
-            redD = 270;
-        }
-        else if (e.keyCode === 32){
+        //RED SHOOT
+        if (e.keyCode === 32){
             //adds a bullet direction, x and y to a list
             if (redD == 90){
-                bulletList.push([redD, redX+50, redY+ 20]);
+                bulletList.push([redD, redX + 50, redY + 20]);
             }
             else if (redD == 180){
                 bulletList.push([redD, redX + 20, redY + 50]);
@@ -78,28 +63,12 @@ document.addEventListener('keydown', (e) => {
             else if (redD == 270){
                 bulletList.push([redD, redX - 20, redY + 20]);
             }
-            else if (blueD == 0){
+            else if (redD == 0){
                 bulletList.push([redD, redX + 20, redY -20]);
             }
         }
     
-        //BLUE CONTROLS
-        else if (e.keyCode === 38){
-            blueY-=playerSpeed;
-            blueD = 0;
-        }
-        else if (e.keyCode === 39){
-            blueX+=playerSpeed;
-            blueD = 90;
-        }
-        else if (e.keyCode === 40){
-            blueY+=playerSpeed;
-            blueD = 180;
-        }
-        else if (e.keyCode === 37){
-            blueX-=playerSpeed;
-            blueD = 270;
-        }
+        //BLUE SHOOT
         else if (e.keyCode === 188){
             //adds a bullet direction, x and y to a list
             if (blueD == 90){
@@ -119,6 +88,27 @@ document.addEventListener('keydown', (e) => {
         
     })
 
+//array to store key values in
+var keys = [false];
+
+//fill array with false <--values to true if key is held down, once lifted, back to false
+for (let i = 1; i < 223; i++){
+    keys.push(false);
+}
+
+
+document.addEventListener("keydown", keyDownHandler, false);
+document.addEventListener("keyup", keyUpHandler, false);
+
+function keyDownHandler(e){
+    //changes any keys depressed value in keys[] to true
+    keys[e.keyCode] =  true;
+}
+
+function keyUpHandler(e){
+    //changes any keys released value in keys to false
+    keys[e.keyCode] = false;
+}
 
 setInterval(function gameLoop(){
     game = true;
@@ -126,12 +116,64 @@ setInterval(function gameLoop(){
 	clear();
     //where the updates should start 
     
+    //player movement and firing (as decided by keys[] array)
+    
+    //Red Player Controls
+    //W (forwards)
+    if (keys[87] == true){
+        redY -= playerSpeed;
+        redD = 0;
+    }
+    //S (backwards)
+    if (keys[83] == true){
+        redY += playerSpeed;
+        redD = 180;
+    }
+    
+    //D turns right (modifies direction math has yet to come)   
+    if (keys[68] == true){
+        redX += playerSpeed;
+        redD = 90;
+    }
+    
+    //A turns left (modifies direction, math has yet to come)
+    if (keys[65] ==true){
+        redX -= playerSpeed;
+        redD = 270;
+    }
+    
+    //shooting should still be on a press by press basis imo 
+    
+    //Blue Player Controls
+    //up arrow (forwards)
+    if (keys[38] == true){
+        blueY -= playerSpeed;
+        blueD = 0;
+    }
+    //Down Arrow (backwards)
+    if (keys[40] == true){
+        blueY += playerSpeed;
+        blueD = 180;
+    }
+    //Right Arrow (turns right)
+    if (keys[39] == true){
+        blueX += playerSpeed;
+        blueD = 90;
+    }
+    //Left Arrow (turns left)
+    if (keys[37] == true){
+        blueX -= playerSpeed;
+        blueD = 270;
+    }
+    
+    //Right Arrow (turns right)
+    
     //keeps red in line (inside the canvas)
     if (redX >= width-50){
         redX = width-50;
     }
-    if (redY >= height){
-        redY = height-50;
+    if (redY >= 750){
+        redY = 750;
     }
     if (redX <= 0){
        redX = 0;
@@ -144,7 +186,7 @@ setInterval(function gameLoop(){
     if (blueX >= 1150){
         blueX = 1150;
     }
-    if (blueY >= 800){
+    if (blueY >= 750){
         blueY = 750;
     }
     if (blueX <= 0){
@@ -153,7 +195,7 @@ setInterval(function gameLoop(){
     if(blueY <= 0){
         blueY = 0;
     }
-
+    
     
     //iterates through bullet list and traces each one of them
     //draws a bullet for every item in the bullet list
@@ -192,6 +234,7 @@ setInterval(function gameLoop(){
         }
     }
     
+    //when the round ends resets the starting position 
     if (game == false){
         redX = 50;
         redY = 50;
