@@ -30,12 +30,12 @@ setInterval(function gameLoop(){
     //D turns right (modifies direction math has yet to come)   
     if (keys[68] == true){
         //redX += playerSpeed;
-        redD = redD + 1;
+        redD = redD + 2;
     }
     
     //A turns left (modifies direction, math has yet to come)
     if (keys[65] ==true){
-        redD = redD - 1;
+        redD = redD - 2;
     }
     
     //Blue Player Controls
@@ -51,11 +51,11 @@ setInterval(function gameLoop(){
     }
     //Right Arrow (turns right)
     if (keys[39] == true){
-        blueD = blueD + 1;
+        blueD = blueD + 2;
     }
     //Left Arrow (turns left)
     if (keys[37] == true){  
-        blueD = blueD - 1;
+        blueD = blueD - 2;
     }
     
     //keeps red in line (inside the canvas)
@@ -94,32 +94,19 @@ setInterval(function gameLoop(){
         bulletList[i][1] += (bulletSpeed * Math.cos(convertAngle(bulletList[i][0] - 90)));
         bulletList[i][2] += (bulletSpeed * Math.sin(convertAngle(bulletList[i][0] - 90)));
         
-        /* BOUNCING OFF WALLS TRY TO FIX LATER
-        if (bulletList[i][1] <= 0){
+        //BOUNCING OFF WALLS TRY TO FIX LATER
+        if (bulletList[i][1] <= 0 || bulletList[i][1] >= 1200){
             bulletList[i][3]++;
-            if (bulletList[i][3] < 2){
+            if (bulletList[i][3] <= ricochets){
                 bulletList[i][0] = -bulletList[i][0];
             }
         }
-        if (bulletList[i][1] >= 1200){
+        if (bulletList[i][2] <= 0 || bulletList[i][2] >= 800){
             bulletList[i][3]++;
-            if (bulletList[i][3] < 2){
-                bulletList[i][0] = -bulletList[i][0];
+            if (bulletList[i][3] <= ricochets){
+                bulletList[i][0] = 180-bulletList[i][0];
             }
         }
-        if (bulletList[i][2] <= 0){
-            bulletList[i][3]++;
-            if (bulletList[i][3] < 2){
-                bulletList[i][0] = -bulletList[i][0];
-            }
-        }
-        if (bulletList[i][2] >= 800){
-            bulletList[i][3]++;
-            if (bulletList[i][3] < 2){
-                bulletList[i][0] = -bulletList[i][0];
-            }
-        }
-        */
         
         drawBullet(bulletList[i][0], bulletList[i][1], bulletList[i][2]);
         
@@ -152,6 +139,7 @@ setInterval(function gameLoop(){
         blueX = 1100;
         blueY = 700;
         blueD = 0;
+        bulletList = [[],[]]
     }
 
     redTeam.drawPlayer(redX,redY, 50, redD);
@@ -174,6 +162,7 @@ blueD = 0;
 playerSpeed = 3; //<-------Player Movement Speed (in pixels per frame) 
 //rotationSpead = 3; //<---- Speed at which players turn
 bulletSpeed = 5;//<--------Bullet Speed
+ricochets = 1; //<---Number of ricochets allowed
 
 //update function
 function update(){
@@ -247,7 +236,7 @@ function drawPlayer(centerX, centerY, size, angle){
 
 //draws the bullet
 function drawBullet(d, x, y){
-    drawSquare(x, y, 10, d, "#00000")
+    drawSquare(x, y, 10, d, "#000000")
 }
 
 //converst angle to radians
