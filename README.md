@@ -12,4 +12,4 @@ Red is controlled similarly with WASD and shoots with the space bar.
 
 -Ryan Crouch
 
-Push this shit to updates first 
+This is a test
