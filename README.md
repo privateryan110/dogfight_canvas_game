@@ -11,3 +11,5 @@ Blue controlled with the arrow keys, up being forward, down being backwards with
 Red is controlled similarly with WASD and shoots with the space bar. 
 
 -Ryan Crouch
+
+Push this shit to updates first 
